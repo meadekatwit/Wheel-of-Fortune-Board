@@ -25,6 +25,8 @@ def revealLetter(tiles, letter):
             tile.state = "t"
             break
     for tile in tiles:
+        if tile.state == "b" and tile.letter.lower() != letter:
+            tile.state = "t"
         if tile.letter.lower() == letter and tile.state == "w":
             tile.state = "b"
 
@@ -58,10 +60,13 @@ def displayRandom(tiles):
                 break
 
 tiles = []
+lettersVisual = []
 stringToTiles(tiles, "  /  Roll for/ Performance")
+
 
 SCREENX = 880
 SCREENY = 455
+alphabet = "abcdefghijklmnopqrstuvwxyz"
 
 pygame.init()
 screen = pygame.display.set_mode((SCREENX, SCREENY))
@@ -69,7 +74,8 @@ pygame.display.set_caption('Wheel of Fortune')
 
 bg = pygame.image.load('bg.png')
 
-f = pygame.font.SysFont(name = 'arial', size = 40, bold = True, italic = False)
+largeLetter = pygame.font.SysFont(name = 'arial', size = 40, bold = True, italic = False)
+smallLetter = pygame.font.SysFont(name = 'arial', size = 20, bold = True, italic = False)
 
 while True: # main game loop
     for event in pygame.event.get():
@@ -80,7 +86,12 @@ while True: # main game loop
             if event.key == K_RETURN:
                 displayRandom(tiles)
             else:
-                revealLetter(tiles, event.unicode)
+                letter = event.unicode
+                revealLetter(tiles, letter)
+                if not letter in lettersVisual and letter in alphabet:
+                    lettersVisual.append(letter)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
 
     screen.blit(bg, (0,0)) #Paste BG Image
 
@@ -90,11 +101,20 @@ while True: # main game loop
         else:
             pygame.draw.rect(screen, (255, 255, 255), (getX(t.x), getY(t.y), 42, 61))
             if t.state == "t":
-                label = f.render(t.letter, True, (0, 0, 0))
+                label = largeLetter.render(t.letter, True, (0, 0, 0))
                 labelRect = label.get_rect()
                 labelRect.center = (getX(t.x) + 42/2.0, getY(t.y) + 61/2.0)
                 screen.blit(label, labelRect)
+
+    for letter in alphabet:
+        if letter in lettersVisual:
+            label = smallLetter.render(letter.upper(), True, (100, 100, 100))
+        else:
+            label = smallLetter.render(letter.upper(), True, (255, 255, 255))
         
+        labelRect = label.get_rect()
+        labelRect.center = (alphabet.index(letter) * 20 + 189, 438)
+        screen.blit(label, labelRect)
     
     #for y in range(4):
         #for x in range(14):
