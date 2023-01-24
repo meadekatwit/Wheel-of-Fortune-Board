@@ -31,6 +31,7 @@ def revealLetter(tiles, letter):
             tile.state = "b"
 
 def stringToTiles(tiles, string):
+    tiles.clear()
     x = 1
     y = 0
     for char in string:
@@ -59,10 +60,18 @@ def displayRandom(tiles):
                 n.state = "t"
                 break
 
+def showAll(tiles):
+    for tile in tiles:
+        tile.state = "t"
+
 tiles = []
 lettersVisual = []
-stringToTiles(tiles, "  /  Roll for/ Performance")
 
+stringToTiles(tiles, "  /  Roll for/ Performance")
+categoryText = "Webshow Title"
+
+listTitles = ["  /  Roll for/ Performance", "/  Casting a /  Spell Slot", " Making eye/ contact with/ a beholder"]
+catTitles = ["Webshow Title", "Before & After", "What are you doing?"]
 
 SCREENX = 880
 SCREENY = 455
@@ -76,6 +85,10 @@ bg = pygame.image.load('bg.png')
 
 largeLetter = pygame.font.SysFont(name = 'arial', size = 40, bold = True, italic = False)
 smallLetter = pygame.font.SysFont(name = 'arial', size = 20, bold = True, italic = False)
+category    = pygame.font.SysFont(name = 'trebuchet_ms', size = 20, bold = True, italic = True)
+
+dx = 0
+dy = 0
 
 while True: # main game loop
     for event in pygame.event.get():
@@ -85,6 +98,25 @@ while True: # main game loop
         if event.type == KEYDOWN:
             if event.key == K_RETURN:
                 displayRandom(tiles)
+            elif event.key == K_1:
+                print("Options:")
+                print("---------")
+                print("1\t- Show this menu")
+                print("2\t- Input New Wheel")
+                print("3\t- Input New Category")
+                print("4\t- Show all letters")
+                print("5\t- Load Preloaded Text")
+                print("Enter\t- Show random letter")
+            elif event.key == K_2:
+                stringToTiles(tiles, input("Wheel Text: "))
+            elif event.key == K_3:
+                categoryText = input("Category Text: ")
+            elif event.key == K_4:
+                showAll(tiles)
+            elif event.key == K_5:
+                n = int(input("Which input? (0 - " + str(min(len(listTitles), len(catTitles)) - 1) + "): "))
+                stringToTiles(tiles, listTitles[n])
+                categoryText = catTitles[n]
             else:
                 letter = event.unicode
                 revealLetter(tiles, letter)
@@ -92,10 +124,11 @@ while True: # main game loop
                     lettersVisual.append(letter)
         if event.type == pygame.MOUSEBUTTONDOWN:
             print(event.pos)
+            dx, dy = event.pos
 
     screen.blit(bg, (0,0)) #Paste BG Image
 
-    for t in tiles:
+    for t in tiles: #Place tiles
         if t.state == "b":
             pygame.draw.rect(screen, (32, 102, 188), (getX(t.x), getY(t.y), 42, 61))
         else:
@@ -106,7 +139,7 @@ while True: # main game loop
                 labelRect.center = (getX(t.x) + 42/2.0, getY(t.y) + 61/2.0)
                 screen.blit(label, labelRect)
 
-    for letter in alphabet:
+    for letter in alphabet: #Show bottom letters
         if letter in lettersVisual:
             label = smallLetter.render(letter.upper(), True, (100, 100, 100))
         else:
@@ -115,6 +148,13 @@ while True: # main game loop
         labelRect = label.get_rect()
         labelRect.center = (alphabet.index(letter) * 20 + 189, 438)
         screen.blit(label, labelRect)
+
+    label = category.render(categoryText, True, (0, 0, 0)) #Display Category
+    labelRect = label.get_rect()
+    labelRect.center = (SCREENX/2, 405)
+    pygame.draw.rect(screen, (0, 0, 0), labelRect, width = 5)
+    pygame.draw.rect(screen, (200, 200, 255), labelRect)
+    screen.blit(label, labelRect)
     
     #for y in range(4):
         #for x in range(14):
