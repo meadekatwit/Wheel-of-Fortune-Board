@@ -1,4 +1,5 @@
 import pygame, sys, random
+import textParser as tp
 from pygame.locals import *
 
 class Tile:
@@ -30,7 +31,9 @@ def revealLetter(tiles, letter):
         if tile.letter.lower() == letter and tile.state == "w":
             tile.state = "b"
 
-def stringToTiles(tiles, string):
+def stringToTiles(tiles, string, symbols):
+    if not "/" in string:
+        string = tp.parseWheel(string)
     tiles.clear()
     x = 1
     y = 0
@@ -45,6 +48,7 @@ def stringToTiles(tiles, string):
         else:
             tiles.append(Tile(x,y,"w",char))
             x += 1
+    loadSymbols(tiles, symbols)
 
 def displayRandom(tiles):
     allShowing = True
@@ -60,6 +64,11 @@ def displayRandom(tiles):
                 n.state = "t"
                 break
 
+def loadSymbols(tiles, symbols):
+    for tile in tiles:
+        if tile.letter in symbols:
+            tile.state = "w"
+
 def showAll(tiles):
     for tile in tiles:
         tile.state = "t"
@@ -67,15 +76,38 @@ def showAll(tiles):
 tiles = []
 lettersVisual = []
 
-stringToTiles(tiles, "  /  Roll for/ Performance")
-categoryText = "Webshow Title"
+f = open("solutions.txt")
+listTitles = f.readlines()
 
-listTitles = ["  /  Roll for/ Performance", "/  Casting a /  Spell Slot", " Making eye/ contact with/ a beholder"]
-catTitles = ["Webshow Title", "Before & After", "What are you doing?"]
+for i in range(len(listTitles) - 1):
+    listTitles[i] = listTitles[i].rstrip()
+
+##listTitles = ["  /  Roll for/ Performance",
+##              "/  Casting a /  Spell Slot",
+##              " Making eye/ contact with/ a beholder",
+##              " Valdas's/  Spire of/  Secrets"]
+
+f = open("solutions.txt")
+
+
+catTitles = f.readlines()
+
+for i in range(len(listTitles) - 1):
+    catTitles[i] = catTitles[i].rstrip()
+
+print(catTitles)
+##catTitles = ["Webshow Title",
+##             "Before & After",
+##             "What are you doing?",
+##             "Best Sellers"]
 
 SCREENX = 880
 SCREENY = 455
 alphabet = "abcdefghijklmnopqrstuvwxyz"
+symbols = ",.'"
+
+stringToTiles(tiles, "  /  Roll for/ Performance", symbols)
+categoryText = "Webshow Title"
 
 pygame.init()
 screen = pygame.display.set_mode((SCREENX, SCREENY))
@@ -108,14 +140,14 @@ while True: # main game loop
                 print("5\t- Load Preloaded Text")
                 print("Enter\t- Show random letter")
             elif event.key == K_2:
-                stringToTiles(tiles, input("Wheel Text: "))
+                stringToTiles(tiles, input("Wheel Text: "), symbols)
             elif event.key == K_3:
                 categoryText = input("Category Text: ")
             elif event.key == K_4:
                 showAll(tiles)
             elif event.key == K_5:
                 n = int(input("Which input? (0 - " + str(min(len(listTitles), len(catTitles)) - 1) + "): "))
-                stringToTiles(tiles, listTitles[n])
+                stringToTiles(tiles, listTitles[n], symbols)
                 categoryText = catTitles[n]
             else:
                 letter = event.unicode
