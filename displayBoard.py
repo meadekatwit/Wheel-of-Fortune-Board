@@ -49,6 +49,7 @@ def stringToTiles(tiles, string, symbols):
             tiles.append(Tile(x,y,"w",char))
             x += 1
     loadSymbols(tiles, symbols)
+    lettersVisual.clear()
 
 def displayRandom(tiles):
     allShowing = True
@@ -67,7 +68,7 @@ def displayRandom(tiles):
 def loadSymbols(tiles, symbols):
     for tile in tiles:
         if tile.letter in symbols:
-            tile.state = "w"
+            tile.state = "t"
 
 def showAll(tiles):
     for tile in tiles:
@@ -78,6 +79,7 @@ lettersVisual = []
 
 f = open("solutions.txt")
 listTitles = f.readlines()
+#print(listTitles)
 
 for i in range(len(listTitles) - 1):
     listTitles[i] = listTitles[i].rstrip()
@@ -87,7 +89,7 @@ for i in range(len(listTitles) - 1):
 ##              " Making eye/ contact with/ a beholder",
 ##              " Valdas's/  Spire of/  Secrets"]
 
-f = open("solutions.txt")
+f = open("clues.txt")
 
 
 catTitles = f.readlines()
@@ -95,7 +97,7 @@ catTitles = f.readlines()
 for i in range(len(listTitles) - 1):
     catTitles[i] = catTitles[i].rstrip()
 
-print(catTitles)
+#print(catTitles)
 ##catTitles = ["Webshow Title",
 ##             "Before & After",
 ##             "What are you doing?",
@@ -104,7 +106,9 @@ print(catTitles)
 SCREENX = 880
 SCREENY = 455
 alphabet = "abcdefghijklmnopqrstuvwxyz"
-symbols = ",.'"
+symbols = ",.'-!@#$%^&*():"
+
+rnd = -1
 
 stringToTiles(tiles, "  /  Roll for/ Performance", symbols)
 categoryText = "Webshow Title"
@@ -147,8 +151,15 @@ while True: # main game loop
                 showAll(tiles)
             elif event.key == K_5:
                 n = int(input("Which input? (0 - " + str(min(len(listTitles), len(catTitles)) - 1) + "): "))
-                stringToTiles(tiles, listTitles[n], symbols)
-                categoryText = catTitles[n]
+                rnd = n
+                stringToTiles(tiles, listTitles[rnd], symbols)
+                categoryText = catTitles[rnd]
+            elif event.key == K_6:
+                rnd += 1
+                if rnd == len(listTitles):
+                    rnd = 0
+                stringToTiles(tiles, listTitles[rnd], symbols)
+                categoryText = catTitles[rnd]
             else:
                 letter = event.unicode
                 revealLetter(tiles, letter)

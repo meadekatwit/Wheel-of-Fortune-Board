@@ -43,7 +43,7 @@ def parseWheel(inpt):
     if len(b) > 2:
         b[2] = (" " * offsets[largest]) + b[2]
     if len(b) > 3:
-        b[3] = (" " * (offsets[largest] - 1)) + b[0]
+        b[3] = (" " * (offsets[largest] - 1)) + b[3]
 
     #print(b)
 
